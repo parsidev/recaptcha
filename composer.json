@@ -1,0 +1,20 @@
+{
+  "name": "parsidev/recaptcha",
+  "description": "reCAPTCHA package (www.google.com/recaptcha)",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mohammad Reza",
+      "email": "info@parsidev.ir"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "Parsidev\\Recaptcha": "src/"
+    }
+  },
+  "minimum-stability": "stable"
+}
