@@ -2,30 +2,48 @@
 
 namespace Parsidev\Recaptcha;
 
-use Parsidev\Recaptcha\RequestMethod\Post;
-
 class Recaptcha
 {
-    const VERSION = 'php_1.1.2';
-    protected $secret;
-    private $requestMethod;
+    protected $service;
+    protected $config = [];
+    protected $dataParameterKeys = ['theme', 'type', 'callback', 'tabindex', 'expired-callback'];
 
-    public function __construct($secret, RequestMethod $requestMethod = null)
+    public function __construct($service, $config)
     {
-        if (empty($secret)) {
-            throw new \RuntimeException('No secret provided');
-        }
-        if (!is_string($secret)) {
-            throw new \RuntimeException('The provided secret must be a string');
-        }
-        $this->secret = $secret;
+        $this->service = $service;
+        $this->config = $config;
+    }
 
-        if (!is_null($requestMethod)) {
-            $this->requestMethod = $requestMethod;
-        } else {
-            $this->requestMethod = new Post();
+    public function render($options = [])
+    {
+        $mergedOptions = array_merge($this->config['options'], $options);
+        $data = [
+            'public_key' => value($this->config['public_key']),
+            'options' => $mergedOptions,
+            'dataParams' => $this->extractDataParams($mergedOptions),
+        ];
+        if (array_key_exists('lang', $mergedOptions) && "" !== trim($mergedOptions['lang'])) {
+            $data['lang'] = $mergedOptions['lang'];
         }
+        $view = $this->getView($options);
+        return app('view')->make($view, $data);
+    }
 
+    protected function getView($options = [])
+    {
+        $view = 'recaptcha::' . $this->service->getTemplate();
+        $configTemplate = $this->config['template'];
+        if (array_key_exists('template', $options)) {
+            $view = $options['template'];
+        } elseif ("" !== trim($configTemplate)) {
+            $view = $configTemplate;
+        }
+        return $view;
+    }
+
+    protected function extractDataParams($options = [])
+    {
+        return array_only($options, $this->dataParameterKeys);
     }
 
 
