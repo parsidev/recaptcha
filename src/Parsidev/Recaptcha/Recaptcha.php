@@ -4,6 +4,7 @@ namespace Parsidev\Recaptcha;
 
 class Recaptcha
 {
+    const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
     protected $service;
     protected $config = [];
     protected $dataParameterKeys = ['theme', 'type', 'callback', 'tabindex', 'expired-callback'];
@@ -29,6 +30,11 @@ class Recaptcha
         return app('view')->make($view, $data);
     }
 
+    protected function extractDataParams($options = [])
+    {
+        return array_only($options, $this->dataParameterKeys);
+    }
+
     protected function getView($options = [])
     {
         $view = 'recaptcha::' . $this->service->getTemplate();
@@ -41,10 +47,22 @@ class Recaptcha
         return $view;
     }
 
-    protected function extractDataParams($options = [])
+    public function verify($recaptchaResponse, $userIp = null, $version = null)
     {
-        return array_only($options, $this->dataParameterKeys);
+        $peer_key = version_compare(PHP_VERSION, '5.6.0', '<') ? 'CN_name' : 'peer_name';
+        $params = new RequestParameters($this->config['private_key'], $recaptchaResponse, $userIp, $version);
+        $options = array(
+            'http' => array(
+                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method' => 'POST',
+                'content' => $params->toQueryString(),
+                'verify_peer' => true,
+                $peer_key => 'www.google.com',
+            ),
+        );
+        $context = stream_context_create($options);
+        $result = file_get_contents(self::SITE_VERIFY_URL, false, $context);
+        return Response::fromJson($result);
     }
-
 
 }
