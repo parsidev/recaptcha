@@ -12,7 +12,7 @@ class Response
     {
         $responseData = json_decode($json, true);
         if (!$responseData) {
-            return new Response(false, array('invalid-json'));
+            return new Response(false, ['invalid-json']);
         }
         if (isset($responseData['success']) && $responseData['success'] == true) {
             return new Response(true);
@@ -20,7 +20,7 @@ class Response
         if (isset($responseData['error-codes']) && is_array($responseData['error-codes'])) {
             return new Response(false, $responseData['error-codes']);
         }
-        return new Response(false);
+        return new Response(false,['time-expired']);
     }
 
     public function __construct($success, array $errorCodes = array())
