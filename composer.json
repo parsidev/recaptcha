@@ -1,6 +1,6 @@
 {
   "name": "parsidev/recaptcha",
-  "description": "reCAPTCHA Validator for Laravel 5.6",
+  "description": "reCAPTCHA Validator for Laravel 5.4",
   "license": "MIT",
   "authors": [
     {
@@ -9,23 +9,13 @@
     }
   ],
   "require": {
-    "php": "~7.0",
-    "illuminate/support": "~5.5 | ~6.0 | ~7.0"
+    "php": ">=5.4.0",
+    "illuminate/support": "5.4.*"
   },
   "autoload": {
     "psr-0": {
       "Parsidev\\Recaptcha": "src/"
     }
   },
-  "extra": {
-        "laravel": {
-            "providers": [
-                "Parsidev\\Recaptcha\\RecaptchaServiceProvider"
-            ],
-            "aliases": {
-                "Recaptcha": "Parsidev\\Recaptcha\\Facades"
-            }
-        }
-},
-  "minimum-stability": "dev"
+  "minimum-stability": "stable"
 }
